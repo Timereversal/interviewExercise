@@ -74,3 +74,20 @@ func perimeter(p1, p2, p3 Planet) float64 {
 	p = distance(p1, p2) + distance(p1, p3) + distance(p2, p3)
 	return p
 }
+
+func slope(p1, p2 Planet) float64 {
+	x1 := p1.radius * math.Cos(float64(p1.angle)*math.Pi/180)
+	x2 := p2.radius * math.Cos(float64(p2.angle)*math.Pi/180)
+
+	y1 := p1.radius * math.Sin(float64(p1.angle)*math.Pi/180)
+	y2 := p2.radius * math.Sin(float64(p2.angle)*math.Pi/180)
+
+	return (x1 - x2) / (y1 - y2)
+}
+
+func colineal(p1, p2, p3 Planet) bool {
+	if slope(p1, p2) == slope(p2, p3) {
+		return true
+	}
+	return false
+}
