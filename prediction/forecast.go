@@ -1,93 +1,77 @@
 package prediction
 
 import (
+	"fmt"
+	"interview/planets/solarsystem"
 	"math"
 )
 
-type Planet struct {
-	name             string
-	radius           float64
-	angleSpeedPerDay int
-	angle            int
-	clockwise        bool
-}
-
-func NewSystem(p1, p2, p3 Planet, d int) {
-
-}
+const epsilon = 1e-2
 
 // alineados con el sol - then sequia
-func sequia(p1, p2, p3 Planet) bool {
+func Sequia(s solarsystem.SolarSystem) bool {
 	//
-	if (math.Tan(float64(p1.angle)) == math.Tan(float64(p2.angle))) && (math.Tan(float64(p2.angle)) == math.Tan(float64(p3.angle))) {
+	//if (math.Tan(float64(s[0].Angle)*math.Pi/180) == math.Tan(float64(s[1].Angle))*math.Pi/180) && (math.Tan(float64(s[0].Angle)*math.Pi/180) == math.Tan(float64(s[2].Angle)*math.Pi/180)) {
+	//fmt.Println(math.Tan(float64(s[0].Angle)*math.Pi/180), math.Tan(float64(s[1].Angle)*math.Pi/180))
+	//if math.Tan(float64(s[0].Angle)*math.Pi/180) == math.Tan(float64(s[1].Angle)*math.Pi/180) {
+	if solarsystem.GetAngle(*s[0], *s[1])%180 == 0 && solarsystem.GetAngle(*s[1], *s[2])%180 == 0 {
+
 		return true
 	}
 	return false
 }
 
-func lluvia(p1, p2, p3 Planet) (bool, bool) {
-	var lluvia bool
-	var intensity bool
-	if getAngle(p1, p2)+getAngle(p2, p3)+getAngle(p3, p1) == 360 {
-		lluvia = true
+// add perimeter
+func lluvia(s solarsystem.SolarSystem, day int) (bool, bool) {
+	lluvias := false
+	intensity := false
+
+	if Sequia(s) {
+		return false, false
 	}
-	lluvia = false
-	return lluvia, intensity
-}
-
-func absInt(x int) int {
-	if x < 0 {
-		return -x
+	// sun inside triangle
+	if solarsystem.GetAngle(*s[0], *s[1])+solarsystem.GetAngle(*s[1], *s[2])+solarsystem.GetAngle(*s[2], *s[0]) == 360 {
+		lluvias = true
 	}
-	return x
-}
-
-func getAngle(p1, p2 Planet) int {
-
-	a := p1.angle % 360
-	b := p2.angle % 360
-
-	if p1.clockwise == p2.clockwise {
-		angle := absInt(a - b)
-		if angle > 180 {
-			return 180 - angle
+	for _, v := range s.MaxPerimeterDays(365 * 10) {
+		if day == v {
+			intensity = true
 		}
-		return angle
-
 	}
-	angle := absInt(360 - a + b)
-	if angle > 180 {
-		return 180 - angle
-	}
-	return angle
 
+	return lluvias, intensity
 }
 
-func distance(p1, p2 Planet) float64 {
-	d := math.Sqrt(math.Pow(p1.radius, 2) + math.Pow(p2.radius, 2) - 2*p1.radius*p2.radius*math.Cos(float64(getAngle(p1, p2))*math.Pi/180))
-	return d
+func slope(p1, p2 solarsystem.Planet) float64 {
+	x1 := p1.Radius * math.Cos(float64(p1.Angle)*math.Pi/180)
+	x2 := p2.Radius * math.Cos(float64(p2.Angle)*math.Pi/180)
+
+	y1 := p1.Radius * math.Sin(float64(p1.Angle)*math.Pi/180)
+	y2 := p2.Radius * math.Sin(float64(p2.Angle)*math.Pi/180)
+	fmt.Printf("angle %d %2f %2f \n", p1.Angle, float64(p1.Angle)*math.Pi/180, x1)
+	return math.Atan((y2 - y1) / (x2 - x1))
 }
 
-func perimeter(p1, p2, p3 Planet) float64 {
-	var p float64
-
-	p = distance(p1, p2) + distance(p1, p3) + distance(p2, p3)
-	return p
-}
-
-func slope(p1, p2 Planet) float64 {
-	x1 := p1.radius * math.Cos(float64(p1.angle)*math.Pi/180)
-	x2 := p2.radius * math.Cos(float64(p2.angle)*math.Pi/180)
-
-	y1 := p1.radius * math.Sin(float64(p1.angle)*math.Pi/180)
-	y2 := p2.radius * math.Sin(float64(p2.angle)*math.Pi/180)
-
-	return (x1 - x2) / (y1 - y2)
-}
-
-func colineal(p1, p2, p3 Planet) bool {
-	if slope(p1, p2) == slope(p2, p3) {
+func colineal(s solarsystem.SolarSystem) bool {
+	fmt.Println("colineal")
+	fmt.Printf("slope angle1 %2f angle2 %2f \n", slope(*s[0], *s[1]), slope(*s[2], *s[0]))
+	if equal(slope(*s[0], *s[1]), slope(*s[1], *s[2])) {
 		return true
 	}
 	return false
+}
+
+func CondicionesOptimas(s solarsystem.SolarSystem) bool {
+	fmt.Println("prediction condiciones optimas")
+	if Sequia(s) {
+		fmt.Println("sequia")
+		return false
+
+	}
+	a := colineal(s)
+	return a
+}
+
+func equal(a, b float64) bool {
+	return math.Abs(a-b) < epsilon
 }
