@@ -9,9 +9,9 @@ import (
 //var maxPerimeter map[int]float64
 
 func main() {
-	p1 := solarsystem.NewPlanet("Ferengi", 500, 1, true)
-	p2 := solarsystem.NewPlanet("Betasoide", 2000, 3, true)
-	p3 := solarsystem.NewPlanet("Vulcano", 1000, 5, false)
+	p1 := solarsystem.NewPlanet("Ferengi", 500, 1, 1)
+	p2 := solarsystem.NewPlanet("Betasoide", 2000, 3, 1)
+	p3 := solarsystem.NewPlanet("Vulcano", 1000, 5, -1)
 
 	//maxPerimeter := map[int]float64{}
 	s := solarsystem.SolarSystem{p1, p2, p3}
@@ -21,12 +21,12 @@ func main() {
 	var count int
 	for d := 0; d < days; d++ {
 		s.NewPosition(d)
-		fmt.Printf(" %+v %+v %+v \n", s[0], s[1], s[2])
+		//fmt.Printf(" %+v %+v %+v \n", s[0], s[1], s[2])
 
 		//if prediction.Sequia(s) {
 		if prediction.CondicionesOptimas(s) {
 			count++
-			fmt.Printf("sequia %+v %+v %+v \n", s[0], s[1], s[2])
+			fmt.Printf("###################a %+v %+v %+v \n", s[0], s[1], s[2])
 		}
 	}
 	fmt.Println(count)

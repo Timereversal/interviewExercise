@@ -9,12 +9,12 @@ type Planet struct {
 	Radius           float64
 	AngleSpeedPerDay int
 	Angle            int
-	Clockwise        bool
+	Clockwise        int
 }
 
 type SolarSystem []*Planet
 
-func NewPlanet(name string, radius float64, angleSpeedPerDay int, clockwise bool) *Planet {
+func NewPlanet(name string, radius float64, angleSpeedPerDay int, clockwise int) *Planet {
 	return &Planet{
 		Name:             name,
 		Radius:           radius,
