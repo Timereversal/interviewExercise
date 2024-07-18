@@ -3,13 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"interview/planets/prediction"
+	"interview/planets/controllers"
 	"interview/planets/solarsystem"
 	"log"
 	"log/slog"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 // var maxPerimeter map[int]float64
@@ -26,8 +25,9 @@ var opts struct {
 	}
 }
 
-func handlerFunc(w http.ResponseWriter, r *http.Request) {
-
+func NewServer() http.Handler {
+	mux := http.NewServeMux()
+	return mux
 }
 
 func main() {
@@ -48,38 +48,9 @@ func main() {
 
 	s := solarsystem.SolarSystem{p1, p2, p3}
 
-	var clima string
-
+	ss := controllers.SolarSystem{Solar: s}
 	mux := http.NewServeMux()
-	mux.HandleFunc("/clima", func(w http.ResponseWriter, r *http.Request) {
-
-		logger.Info("inside clima endpoint")
-		w.Header().Set("Content-Type", "application/json")
-		dia := r.URL.Query().Get("dia")
-		day, err := strconv.Atoi(dia)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		s.NewPosition(day)
-		if prediction.Sequia(s) {
-			clima = "sequia"
-		}
-		if prediction.CondicionesOptimas(s) {
-			clima = "condiciones optimas"
-		}
-		switch {
-		case prediction.Sequia(s):
-			clima = "sequia"
-		case prediction.CondicionesOptimas(s):
-			clima = "condiciones optimas"
-		default:
-			clima = "lluvia"
-		}
-
-		jsonResponse := `{"dia":%d, "clima":%s}`
-		w.Write([]byte(fmt.Sprintf(jsonResponse, day, clima)))
-		//fmt.Fprintf(w, " day %d clima %s", day, clima)
-	})
+	mux.HandleFunc("/clima", ss.Clima)
 	logger.Info("starting Api-Rest")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		fmt.Println(err)
