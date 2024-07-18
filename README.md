@@ -7,3 +7,6 @@ Descripcion del problema
 
 [descripcion_del_problema_2](./docs/exam_interview_image2.png)
 
+
+# Observaciones
+
