@@ -46,7 +46,7 @@ func main() {
 	p2 := solarsystem.NewPlanet("Betasoide", 2000, 3, 1)
 	p3 := solarsystem.NewPlanet("Vulcano", 1000, 5, -1)
 
-	s := solarsystem.SolarSystem{p1, p2, p3}
+	s := solarsystem.Planets{p1, p2, p3}
 
 	ss := controllers.SolarSystem{Solar: s}
 	mux := http.NewServeMux()

@@ -1,9 +1,12 @@
+// Package solarsystem only support prediction for 3 planets according to interview problem description.
 package solarsystem
 
 import (
 	"math"
 )
 
+// Planet struct contains some parameters which define its position
+// Clockwise=-1 means anticlockwise, Clockwise =1 is clockwise
 type Planet struct {
 	Name             string
 	Radius           float64
@@ -12,8 +15,9 @@ type Planet struct {
 	Clockwise        int
 }
 
-type SolarSystem []*Planet
+type Planets []*Planet
 
+// NewPlanet return a Planet Pointer
 func NewPlanet(name string, radius float64, angleSpeedPerDay int, clockwise int) *Planet {
 	return &Planet{
 		Name:             name,
@@ -23,13 +27,13 @@ func NewPlanet(name string, radius float64, angleSpeedPerDay int, clockwise int)
 	}
 }
 
-func (s SolarSystem) NewPosition(day int) {
+func (s Planets) NewPosition(day int) {
 	for _, planet := range s {
 		planet.Angle = planet.AngleSpeedPerDay * day
 	}
 }
 
-func (s SolarSystem) MaxPerimeterDays(days int) []int {
+func (s Planets) MaxPerimeterDays(days int) []int {
 	maxPerimeter := map[int]float64{}
 	//daysMaxPerimeter := []int{}
 	var daysMaxPerimeter []int
@@ -72,6 +76,7 @@ func absInt(x int) int {
 	return x
 }
 
+// GetAngle is the angle between 2 Planets.
 func GetAngle(p1, p2 Planet) int {
 
 	a := p1.Angle % 360

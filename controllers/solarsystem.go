@@ -9,15 +9,16 @@ import (
 )
 
 type SolarSystem struct {
-	Solar solarsystem.SolarSystem
+	Solar solarsystem.Planets
 }
 
+// Clima endoint to provide the weather conditions in the solarSystem.
 func (s *SolarSystem) Clima(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	dia := r.URL.Query().Get("dia")
 	day, err := strconv.Atoi(dia)
 	if err != nil || day < 0 {
-		http.Error(w, `{"message":"day parameter must be >= 0"}`, http.StatusBadRequest)
+		http.Error(w, `{"message":"day parameter must be a natural number( int >= 0)"}`, http.StatusBadRequest)
 		return
 	}
 	clima := prediction.Clima(s.Solar, day)
